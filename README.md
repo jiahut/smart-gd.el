@@ -25,8 +25,8 @@ This mirrors VSCode's intelligent behavior where `gd` "reads your mind" and does
 ## 🌟 Features
 
 - **🧠 Context-aware**: Automatically switches between definitions and references
-- **⚡ Zero setup**: Works with existing LSP/eglot configurations
-- **🌍 Multi-language**: Supports Go, Python, JavaScript, TypeScript, Rust, C/C++, Emacs Lisp
+- **⚡ Zero setup**: Works with existing LSP/eglot configurations  
+- **🌍 Universal**: Uses LSP for accurate detection + heuristics as fallback
 - **🔧 Non-intrusive**: Uses advice system to enhance `xref-find-definitions`
 - **🐛 Debug mode**: Set `smart-gd-debug` to `t` for troubleshooting
 
@@ -35,9 +35,11 @@ This mirrors VSCode's intelligent behavior where `gd` "reads your mind" and does
 After setup, just use `gd` as usual:
 
 ```go
-// At this line, gd shows references
+// At function definition, gd shows references
 func ProcessRequest(req *TranslationRequest) error {
-    // At this line, gd goes to definition
+    // At struct field definition, gd shows references  
+    req.UserID = "123"
+    // At method call, gd goes to definition
     return req.Validate()
 }
 ```
@@ -58,35 +60,12 @@ func ProcessRequest(req *TranslationRequest) error {
 (smart-gd-goto-definition-or-references)  ; Manual invocation
 ```
 
-## 🤔 Why This Matters
-
-Traditional Emacs workflow:
-- `gd` → always go to definition
-- `gr` → always show references  
-- User has to remember and switch between commands
-
-VSCode-style workflow:
-- `gd` → intelligently choose based on context
-- More efficient, fewer keystrokes
-- Cognitive load reduction
-
-## 📋 Supported Languages
-
-| Language | Function/Method | Type/Class | Variable | Constant |
-|----------|----------------|------------|----------|----------|
-| Go | ✅ | ✅ | ✅ | ✅ |
-| Python | ✅ | ✅ | ❌ | ❌ |
-| JavaScript/TypeScript | ✅ | ✅ | ✅ | ❌ |
-| Rust | ✅ | ✅ | ❌ | ❌ |
-| C/C++ | ✅ | ❌ | ❌ | ❌ |
-| Emacs Lisp | ✅ | ❌ | ✅ | ✅ |
-
 ## 🔧 How It Works Internally
 
-1. **Advice Hook**: Wraps `xref-find-definitions` with smart behavior
-2. **Pattern Matching**: Uses regex to detect if cursor is at a definition
-3. **Context Switch**: Calls `xref-find-references` if at definition, otherwise proceeds normally
-4. **LSP Integration**: Works seamlessly with eglot, lsp-mode, and other LSP clients
+1. **LSP Detection**: First tries to use LSP server to accurately determine if cursor is at definition
+2. **Heuristic Fallback**: Falls back to pattern matching when LSP is unavailable
+3. **Context Switch**: Calls `xref-find-references` if at definition, otherwise `xref-find-definitions`
+4. **Universal Support**: Works with all LSP-supported languages (Go, Python, JavaScript, TypeScript, Rust, C/C++, etc.)
 
 ## 🛠️ Troubleshooting
 
