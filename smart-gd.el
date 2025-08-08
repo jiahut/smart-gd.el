@@ -4,7 +4,7 @@
 ;; Author: zhijia.zhang
 ;; Email: jiahut@gmail.com
 ;; Keywords: convenience, tools, lsp, navigation
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Package-Requires: ((emacs "27.1") (xref "1.0"))
 ;; URL: https://github.com/jiahut/smart-gd.el
 
@@ -113,41 +113,6 @@ First tries LSP-based detection, falls back to heuristics."
                 (string-match-p "^\\s-*(defcustom\\s-+\\w+" line)))
            ;; Default: not at definition
            (t nil))))))
-       ;; Python definitions
-       ((derived-mode-p 'python-mode)
-        (string-match-p "^\\s-*\\(def\\|class\\|async\\s-+def\\)\\s-+" line))
-       ;; JavaScript/TypeScript definitions
-       ((or (derived-mode-p 'js-mode)
-            (derived-mode-p 'typescript-mode)
-            (derived-mode-p 'js2-mode))
-        (or (string-match-p "^\\s-*function\\s-+\\w+" line)
-            (string-match-p "^\\s-*\\(const\\|let\\|var\\)\\s-+\\w+\\s-*=\\s-*function" line)
-            (string-match-p "^\\s-*\\(const\\|let\\|var\\)\\s-+\\w+\\s-*=\\s-*(" line)
-            (string-match-p "^\\s-*class\\s-+\\w+" line)
-            (string-match-p "^\\s-*interface\\s-+\\w+" line)
-            (string-match-p "^\\s-*type\\s-+\\w+" line)))
-       ;; C/C++ function definitions
-       ((or (derived-mode-p 'c-mode)
-            (derived-mode-p 'c++-mode))
-        (and (string-match-p "\\w+\\s-*(" line)
-             (not (string-match-p ";\\s-*$" line))
-             (save-excursion
-               (end-of-line)
-               (re-search-forward "{" (line-end-position 3) t))))
-       ;; Rust definitions
-       ((derived-mode-p 'rust-mode)
-        (or (string-match-p "^\\s-*\\(pub\\s-+\\)?fn\\s-+\\w+" line)
-            (string-match-p "^\\s-*\\(pub\\s-+\\)?struct\\s-+\\w+" line)
-            (string-match-p "^\\s-*\\(pub\\s-+\\)?enum\\s-+\\w+" line)
-            (string-match-p "^\\s-*\\(pub\\s-+\\)?trait\\s-+\\w+" line)))
-       ;; Elisp definitions
-       ((derived-mode-p 'emacs-lisp-mode)
-        (or (string-match-p "^\\s-*(defun\\s-+\\w+" line)
-            (string-match-p "^\\s-*(defmacro\\s-+\\w+" line)
-            (string-match-p "^\\s-*(defvar\\s-+\\w+" line)
-            (string-match-p "^\\s-*(defcustom\\s-+\\w+" line)))
-       ;; Default: not at definition
-       (t nil)
 
 ;;;###autoload
 (defun smart-gd-goto-definition-or-references ()
